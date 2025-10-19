@@ -3,9 +3,11 @@
 This project scrapes job listings from multiple websites, starting with Glassdoor. Future support for LinkedIn, Welcome to the Jungle, and Indeed is planned.
 
 ## What's New
-- Automatic 10-second wait for results to load (no manual input required)
-- Summarizes job descriptions using Groq LLM (with a supported model, e.g., llama-3-8b-8192)
+- Scrapes jobs for a user-input job title across 70+ countries
+- Only scrapes jobs posted within the last 3 days (stops at 4d or more)
+- Summarizes job descriptions using Groq LLM (with a supported model, e.g., llama-3.1-8b-instant)
 - Handles and closes modal dialogs automatically during scraping
+- Robustly clears search fields before each search
 - Saves results in a structured jobs.json file (title, link, summary)
 
 ## Setup
@@ -22,20 +24,6 @@ This project scrapes job listings from multiple websites, starting with Glassdoo
 5. Run the scraper:
    ```bash
    python glassdoor_scraper.py
-   ```
-
-## Committing and Pushing Changes
-1. Add all changes:
-   ```bash
-   git add .
-   ```
-2. Commit with a message:
-   ```bash
-   git commit -m "Update: Groq LLM summarization, modal handling, auto-wait, structured JSON output"
-   ```
-3. Push to your remote repository:
-   ```bash
-   git push
    ```
 
 ## Notes
