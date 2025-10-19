@@ -6,6 +6,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 import time
+import os
+import json
+from dotenv import load_dotenv
+load_dotenv()
+from groq import Groq
 
 # Connect to an existing Chrome session started with remote debugging
 chrome_options = Options()
@@ -17,6 +22,7 @@ service = Service()
 driver = webdriver.Chrome(service=service, options=chrome_options)
 search_term = "internship"
 location_term = "London"  # Example location
+client = Groq(api_key=os.environ.get("OPENAI_API_KEY"))
 try:
     # Use the unique id for the search input
     try:
@@ -40,7 +46,8 @@ except Exception as e:
     print(f"Error searching: {e}")
 
 # Wait for results to load
-input("Press Enter after results are loaded...")
+print("Waiting 10 seconds for results to load...")
+time.sleep(3)
 
 # Select 'Most recent' from the sort dropdown if available
 try:
@@ -60,9 +67,18 @@ except Exception as e:
     print(f"Error selecting sort option: {e}")
 
 # Scrape job cards
+jobs_data = []
 job_cards = driver.find_elements(By.CSS_SELECTOR, "li[data-test='jobListing']")
 for card in job_cards:
     try:
+        # Check and close job alert modal if it appears
+        try:
+            close_btn = driver.find_element(By.CSS_SELECTOR, "button[data-test='job-alert-modal-close']")
+            close_btn.click()
+            print("Closed job alert modal.")
+            time.sleep(1)
+        except Exception:
+            pass
         # Click the card to open details
         driver.execute_script("arguments[0].scrollIntoView();", card)
         card.click()
@@ -89,10 +105,29 @@ for card in job_cards:
             title = ""
             link = ""
         print(f"Title: {title}\nLink: {link}\nFull Description: {full_description}\n---")
-        # Here you can pass full_description to your LLM API for summarization
+        summary = ""
+        # Summarize job description using Groq LLM
+        if full_description:
+            response = client.chat.completions.create(
+                messages=[{"role": "user", "content": f"Summarize this job description: {full_description}"}],
+                model="llama-3.1-8b-instant"
+            )
+            summary = response.choices[0].message.content
+            print(f"Summary: {summary}\n---")
+        job_info = {
+            "title": title,
+            "link": link,
+            "description": full_description,
+            "summary": summary
+        }
+        jobs_data.append(job_info)
     except Exception as e:
         print(f"Error parsing job card: {e}")
 
 print(driver.title)
+
+# Save jobs data to jobs.json
+with open("jobs.json", "w", encoding="utf-8") as f:
+    json.dump(jobs_data, f, ensure_ascii=False, indent=2)
 
 driver.quit()

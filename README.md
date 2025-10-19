@@ -1,11 +1,12 @@
 # Job Scraping Project: Glassdoor, LinkedIn, Welcome to the Jungle, Indeed
 
-This project aims to scrape job listings from multiple websites, starting with Glassdoor. Future support for LinkedIn, Welcome to the Jungle, and Indeed is planned.
+This project scrapes job listings from multiple websites, starting with Glassdoor. Future support for LinkedIn, Welcome to the Jungle, and Indeed is planned.
 
-## Current Status: Glassdoor Scraper
-- Scrapes internship/job listings from Glassdoor using Selenium and Chrome remote debugging.
-- Extracts job title, link, and full description.
-- Results are printed to the console (future: export to CSV/JSON).
+## What's New
+- Automatic 10-second wait for results to load (no manual input required)
+- Summarizes job descriptions using Groq LLM (with a supported model, e.g., llama-3-8b-8192)
+- Handles and closes modal dialogs automatically during scraping
+- Saves results in a structured jobs.json file (title, link, summary)
 
 ## Setup
 1. Python 3.9+
@@ -17,9 +18,24 @@ This project aims to scrape job listings from multiple websites, starting with G
    ```bash
    chrome.exe --remote-debugging-port=9222
    ```
-4. Run the scraper:
+4. Add your OPENAI_API_KEY to the .env file.
+5. Run the scraper:
    ```bash
    python glassdoor_scraper.py
+   ```
+
+## Committing and Pushing Changes
+1. Add all changes:
+   ```bash
+   git add .
+   ```
+2. Commit with a message:
+   ```bash
+   git commit -m "Update: Groq LLM summarization, modal handling, auto-wait, structured JSON output"
+   ```
+3. Push to your remote repository:
+   ```bash
+   git push
    ```
 
 ## Notes
